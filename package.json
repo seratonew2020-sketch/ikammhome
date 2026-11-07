@@ -8,6 +8,9 @@
     "build": "npx vite build",
     "preview": "vite preview"
   },
+  "allowScripts": [
+    "esbuild"
+  ],
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "vue": "^3.5.13",
