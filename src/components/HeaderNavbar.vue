@@ -24,15 +24,15 @@ const { xs } = useDisplay()
     class="glass-bar border-b ikamm-border"
     flat
   >
-    <v-container class="d-flex align-center justify-space-between py-0 px-3 px-sm-4" style="max-width: 1440px;">
+    <v-container class="d-flex align-center justify-space-between py-0 px-3 px-sm-4 w-100" style="max-width: 1440px;">
       <!-- IKAMM Logo Brand Section -->
       <div 
-        class="d-flex align-center ga-2 ga-sm-3 cursor-pointer flex-shrink-1 overflow-hidden"
+        class="d-flex align-center ga-2 ga-sm-3 cursor-pointer flex-grow-1 flex-shrink-1 overflow-hidden mr-2"
         style="min-width: 0;"
         @click="$emit('reset-filters')"
       >
         <v-avatar
-          :size="xs ? 40 : 50"
+          :size="xs ? 38 : 50"
           rounded="lg"
           class="ikamm-border-accent elevation-4 overflow-hidden bg-surface flex-shrink-0"
         >
@@ -45,13 +45,13 @@ const { xs } = useDisplay()
         <div class="d-flex flex-column justify-center overflow-hidden" style="min-width: 0;">
           <span 
             class="font-serif font-weight-black text-white text-subtitle-1 text-sm-h6 text-truncate brand-title-mobile"
-            style="letter-spacing: 0.12em; line-height: 1.15;"
+            style="letter-spacing: 0.1em; line-height: 1.15;"
           >
             {{ t.brandName }}
           </span>
           <span 
             class="text-uppercase font-weight-bold text-caption text-primary mt-0.5 text-truncate brand-sub-mobile"
-            style="font-size: 9px; letter-spacing: 0.2em;"
+            style="font-size: 9px; letter-spacing: 0.16em;"
           >
             {{ t.brandSub }}
           </span>
@@ -110,8 +110,9 @@ const { xs } = useDisplay()
           variant="tonal"
           color="primary"
           size="small"
-          rounded="xl"
+          rounded="circle"
           class="d-md-none"
+          style="width: 36px; height: 36px;"
           :title="t.navContact"
           @click="$emit('open-contact')"
         ></v-btn>

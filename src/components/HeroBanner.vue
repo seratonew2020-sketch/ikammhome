@@ -37,11 +37,11 @@ const quickTags = [
           variant="outlined"
           color="primary"
           prepend-icon="mdi-star-four-points"
-          class="mb-3 mb-sm-4 text-uppercase font-weight-bold px-3 px-sm-4"
+          class="mb-3 mb-sm-4 text-uppercase font-weight-bold px-2.5 px-sm-4 text-truncate"
           :size="xs ? 'x-small' : 'small'"
-          style="letter-spacing: 0.12em; background-color: rgba(197, 160, 89, 0.1);"
+          style="letter-spacing: 0.08em; max-width: 100%; background-color: rgba(197, 160, 89, 0.1);"
         >
-          {{ t.heroTag }}
+          <span class="text-truncate">{{ t.heroTag }}</span>
         </v-chip>
 
         <!-- Main Headline -->
