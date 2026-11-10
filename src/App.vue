@@ -36,6 +36,8 @@ const showOnlyFavorites = ref(false)
 const toastMessage = ref('')
 const isContactOpen = ref(false)
 const projects = ref(initialProjects)
+const gridCols = ref(4) // 6 = 2 cols, 4 = 3 cols, 3 = 4 cols
+const showScrollTop = ref(false)
 
 let toastTimer = null
 
@@ -61,13 +63,23 @@ onMounted(() => {
     console.error('Failed to parse favorites from storage', e)
   }
 
-  // Escape shortcut
+  // Escape & Arrow navigation shortcut
   window.addEventListener('keydown', handleKeydown)
+  window.addEventListener('scroll', handleScroll, { passive: true })
 })
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('scroll', handleScroll)
 })
+
+const handleScroll = () => {
+  showScrollTop.value = window.scrollY > 400
+}
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
 
 const handleKeydown = (e) => {
   if (e.key === 'Escape') {
@@ -75,6 +87,12 @@ const handleKeydown = (e) => {
       isContactOpen.value = false
     } else if (selectedProject.value) {
       closeModal()
+    }
+  } else if (selectedProject.value && !isContactOpen.value) {
+    if (e.key === 'ArrowRight') {
+      nextProject()
+    } else if (e.key === 'ArrowLeft') {
+      prevProject()
     }
   }
 }
@@ -123,13 +141,33 @@ const getCategoryCount = (catId) => {
   return projects.value.filter(p => p.categoryId === catId).length
 }
 
-// Modal Handlers
+// Modal Handlers & Navigation
 const openModal = (project) => {
   selectedProject.value = project
 }
 
 const closeModal = () => {
   selectedProject.value = null
+}
+
+const currentProjectIndex = computed(() => {
+  if (!selectedProject.value) return -1
+  return filteredProjects.value.findIndex(p => p.id === selectedProject.value.id)
+})
+
+const hasPrevProject = computed(() => currentProjectIndex.value > 0)
+const hasNextProject = computed(() => currentProjectIndex.value >= 0 && currentProjectIndex.value < filteredProjects.value.length - 1)
+
+const prevProject = () => {
+  if (hasPrevProject.value) {
+    selectedProject.value = filteredProjects.value[currentProjectIndex.value - 1]
+  }
+}
+
+const nextProject = () => {
+  if (hasNextProject.value) {
+    selectedProject.value = filteredProjects.value[currentProjectIndex.value + 1]
+  }
 }
 
 // Favorites Handlers
@@ -194,16 +232,18 @@ const requestConsultation = (project) => {
       <!-- Hero Banner -->
       <HeroBanner 
         v-model:search-query="searchQuery"
+        :total-projects="projects.length"
         :t="t"
         @clear-search="searchQuery = ''"
       />
 
-      <!-- Category Filter Tabs -->
+      <!-- Category Filter Tabs (Sticky) -->
       <CategoryFilters 
         :categories="categories"
         :active-category="activeCategory"
         :filtered-count="filteredProjects.length"
         :show-only-favorites="showOnlyFavorites"
+        v-model:grid-cols="gridCols"
         :get-category-count="getCategoryCount"
         :current-lang="currentLang"
         :t="t"
@@ -212,7 +252,7 @@ const requestConsultation = (project) => {
       />
 
       <!-- Projects Gallery Grid -->
-      <v-container class="pb-16 pt-2">
+      <v-container class="pb-16 pt-2" style="max-width: 1440px;">
         <!-- Empty State -->
         <v-sheet
           v-if="filteredProjects.length === 0"
@@ -234,7 +274,7 @@ const requestConsultation = (project) => {
             color="primary"
             variant="flat"
             rounded="xl"
-            class="text-ikamm-dark font-weight-bold text-none px-6"
+            class="text-on-primary font-weight-bold text-none px-6"
             @click="resetFilters"
           >
             {{ t.resetFilters }}
@@ -248,7 +288,7 @@ const requestConsultation = (project) => {
             :key="project.id"
             cols="12"
             sm="6"
-            lg="4"
+            :lg="gridCols"
           >
             <ProjectCard 
               :project="project"
@@ -263,15 +303,51 @@ const requestConsultation = (project) => {
       </v-container>
     </v-main>
 
+    <!-- Floating Quick Actions (Back to Top & Quick Contact) -->
+    <div 
+      class="position-fixed d-flex flex-column align-end ga-2.5"
+      style="bottom: 24px; right: 24px; z-index: 90;"
+    >
+      <v-scale-transition>
+        <v-btn
+          v-if="showScrollTop"
+          icon="mdi-arrow-up"
+          color="surface-variant"
+          size="default"
+          rounded="circle"
+          elevation="8"
+          class="ikamm-border text-white"
+          title="Back to Top"
+          @click="scrollToTop"
+        ></v-btn>
+      </v-scale-transition>
+
+      <v-btn
+        color="primary"
+        size="large"
+        rounded="pill"
+        elevation="12"
+        prepend-icon="mdi-chat-processing"
+        class="text-on-primary font-weight-bold text-none px-5 gold-glow"
+        @click="isContactOpen = true"
+      >
+        {{ t.navContact }}
+      </v-btn>
+    </div>
+
     <!-- Detail Dialog Modal -->
     <ProjectModal 
       :project="selectedProject"
       :is-saved="selectedProject ? isFavorite(selectedProject.id) : false"
+      :has-prev="hasPrevProject"
+      :has-next="hasNextProject"
       :current-lang="currentLang"
       :t="t"
       @close="closeModal"
       @toggle-favorite="toggleFavorite"
       @request-quote="requestConsultation"
+      @prev-project="prevProject"
+      @next-project="nextProject"
     />
 
     <!-- Company Contact Dialog Modal -->

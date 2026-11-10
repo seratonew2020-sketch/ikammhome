@@ -11,34 +11,41 @@ defineEmits(['open-contact'])
 
 <template>
   <v-footer 
-    color="#0B130E" 
+    color="background" 
     class="border-t pt-12 pb-6 mt-auto" 
     style="border-color: rgba(30, 58, 43, 0.4) !important;"
   >
-    <v-container>
+    <v-container style="max-width: 1440px;">
       <!-- Main Footer Columns -->
       <v-row class="mb-8">
         <!-- Col 1: Brand & Slogan -->
         <v-col cols="12" md="4" class="mb-4 mb-md-0">
-          <div class="d-inline-flex mb-3">
-            <v-sheet
-              color="white"
-              rounded="xl"
-              class="px-3 px-sm-4 py-2 d-flex flex-column align-center justify-center ikamm-border-accent"
+          <div class="d-inline-flex align-center ga-3 mb-3">
+            <v-avatar
+              size="56"
+              rounded="lg"
+              class="ikamm-border-accent elevation-4 overflow-hidden bg-surface"
             >
+              <v-img
+                src="/logo.jpg"
+                alt="IKAMM Logo"
+                cover
+              ></v-img>
+            </v-avatar>
+            <div class="d-flex flex-column justify-center">
               <span 
-                class="font-serif font-weight-black text-secondary text-body-1 tracking-widest text-no-wrap"
-                style="letter-spacing: 0.16em !important; line-height: 1;"
+                class="font-serif font-weight-black text-white text-body-1 text-no-wrap"
+                style="letter-spacing: 0.14em !important; line-height: 1.15;"
               >
                 {{ t.brandName }}
               </span>
               <span 
-                class="text-uppercase font-weight-bold text-caption text-ikamm-dark border-t mt-1 pt-0.5 text-no-wrap"
-                style="font-size: 8px !important; letter-spacing: 0.28em !important; border-color: rgba(30, 58, 43, 0.25) !important;"
+                class="text-uppercase font-weight-bold text-caption text-primary mt-1 text-no-wrap"
+                style="font-size: 9px !important; letter-spacing: 0.22em !important;"
               >
                 {{ t.brandSub }}
               </span>
-            </v-sheet>
+            </div>
           </div>
           <h4 class="text-body-2 font-weight-bold text-white mb-2">
             {{ t.companyName }}
@@ -61,21 +68,21 @@ defineEmits(['open-contact'])
 
         <!-- Col 2: Bangkok Headquarters -->
         <v-col cols="12" sm="6" md="4" class="mb-4 mb-sm-0">
-          <div class="text-caption text-primary font-weight-bold text-uppercase mb-3 d-flex align-center ga-1.5" style="letter-spacing: 0.08em;">
+          <div class="text-caption text-primary font-weight-bold text-uppercase mb-3 d-flex align-center ga-2" style="letter-spacing: 0.08em;">
             <v-icon icon="mdi-office-building-marker" size="small"></v-icon>
             {{ t.bkkOfficeTitle }}
           </div>
-          <p class="text-caption text-slate-300 font-weight-light mb-3" style="line-height: 1.7;">
+          <p class="text-caption text-on-surface font-weight-light mb-3" style="line-height: 1.7;">
             {{ t.bkkAddress }}
           </p>
           <div class="text-caption text-muted d-flex flex-column ga-1">
-            <div class="d-flex align-center ga-1.5">
+            <div class="d-flex align-center ga-2">
               <v-icon icon="mdi-phone-outline" size="14" color="primary"></v-icon>
-              <span>{{ t.telLabel }} <a href="tel:+66990869712" class="text-slate-200 text-decoration-none hover-gold font-weight-medium">+66 99 086 9712</a></span>
+              <span>{{ t.telLabel }} <a href="tel:+66990869712" class="text-white text-decoration-none hover-gold font-weight-medium">+66 99 086 9712</a></span>
             </div>
-            <div class="d-flex align-center ga-1.5">
+            <div class="d-flex align-center ga-2">
               <v-icon icon="mdi-chat-outline" size="14" color="primary"></v-icon>
-              <span>{{ t.lineLabel }} <strong class="text-slate-200">099 104 2639</strong></span>
+              <span>{{ t.lineLabel }} <strong class="text-white">099 104 2639</strong></span>
             </div>
           </div>
         </v-col>
@@ -83,28 +90,28 @@ defineEmits(['open-contact'])
         <!-- Col 3: International & Contact Details -->
         <v-col cols="12" sm="6" md="4">
           <!-- Philippines Branch -->
-          <div class="text-caption text-primary font-weight-bold text-uppercase mb-3 d-flex align-center ga-1.5" style="letter-spacing: 0.08em;">
+          <div class="text-caption text-primary font-weight-bold text-uppercase mb-3 d-flex align-center ga-2" style="letter-spacing: 0.08em;">
             <v-icon icon="mdi-earth" size="small"></v-icon>
             {{ t.phOfficeTitle }}
           </div>
-          <p class="text-caption text-slate-300 font-weight-light mb-2" style="line-height: 1.7;">
+          <p class="text-caption text-on-surface font-weight-light mb-2" style="line-height: 1.7;">
             {{ t.phAddress }}
           </p>
-          <div class="text-caption text-muted d-flex align-center ga-1.5 mb-4">
+          <div class="text-caption text-muted d-flex align-center ga-2 mb-4">
             <v-icon icon="mdi-phone-outline" size="14" color="primary"></v-icon>
-            <span>{{ t.telLabel }} <a href="tel:+639085578763" class="text-slate-200 text-decoration-none hover-gold font-weight-medium">+63 90 855 78763</a></span>
+            <span>{{ t.telLabel }} <a href="tel:+639085578763" class="text-white text-decoration-none hover-gold font-weight-medium">+63 90 855 78763</a></span>
           </div>
 
           <!-- Digital Contact Info -->
           <div class="pt-3 border-t d-flex flex-column ga-1 text-caption text-muted" style="border-color: rgba(30, 58, 43, 0.4) !important;">
-            <div class="d-flex align-center ga-1.5">
+            <div class="d-flex align-center ga-2">
               <v-icon icon="mdi-email-outline" size="14" color="primary"></v-icon>
-              <span>{{ t.emailLabel }} <a href="mailto:Service@ikammhomedecor.com" class="text-slate-200 text-decoration-none hover-gold">Service@ikammhomedecor.com</a></span>
+              <span>{{ t.emailLabel }} <a href="mailto:Service@ikammhomedecor.com" class="text-white text-decoration-none hover-gold">Service@ikammhomedecor.com</a></span>
             </div>
-            <div class="d-flex align-center ga-1.5 pl-5">
-              <span><a href="mailto:Marketing@ikammhomedecor.com" class="text-slate-200 text-decoration-none hover-gold">Marketing@ikammhomedecor.com</a></span>
+            <div class="d-flex align-center ga-2 pl-6">
+              <span><a href="mailto:Marketing@ikammhomedecor.com" class="text-white text-decoration-none hover-gold">Marketing@ikammhomedecor.com</a></span>
             </div>
-            <div class="d-flex align-center ga-1.5 mt-1">
+            <div class="d-flex align-center ga-2 mt-1">
               <v-icon icon="mdi-web" size="14" color="primary"></v-icon>
               <span>{{ t.websiteLabel }} <a href="https://www.ikammhomedecor.com" target="_blank" class="text-primary text-decoration-none font-weight-bold hover-gold">www.ikammhomedecor.com</a></span>
             </div>

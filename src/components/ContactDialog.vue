@@ -39,19 +39,32 @@ defineEmits(['update:modelValue'])
       ></v-btn>
 
       <!-- Header -->
-      <div class="mb-6">
-        <div class="d-flex align-center ga-2 mb-2">
-          <v-chip size="small" color="primary" variant="flat" class="font-weight-bold text-ikamm-dark text-caption">
-            OFFICIAL CONTACT
-          </v-chip>
-          <span class="text-caption text-muted">IKAMM HOME DECOR CO., LTD.</span>
+      <div class="d-flex align-center ga-4 mb-6">
+        <v-avatar
+          size="60"
+          rounded="lg"
+          class="ikamm-border-accent elevation-4 overflow-hidden flex-shrink-0"
+        >
+          <v-img
+            src="/logo.jpg"
+            alt="IKAMM Logo"
+            cover
+          ></v-img>
+        </v-avatar>
+        <div>
+          <div class="d-flex align-center ga-2 mb-1">
+            <v-chip size="x-small" color="primary" variant="flat" class="font-weight-bold text-on-primary text-caption">
+              OFFICIAL CONTACT
+            </v-chip>
+            <span class="text-caption text-muted">IKAMM HOME DECOR CO., LTD.</span>
+          </div>
+          <h2 class="font-serif text-h6 text-sm-h5 font-weight-bold text-white mb-1">
+            {{ t.contactDialogTitle }}
+          </h2>
+          <p class="text-caption text-muted font-weight-light mb-0">
+            {{ t.contactDialogSub }}
+          </p>
         </div>
-        <h2 class="font-serif text-h5 font-weight-bold text-white mb-1">
-          {{ t.contactDialogTitle }}
-        </h2>
-        <p class="text-caption text-muted font-weight-light">
-          {{ t.contactDialogSub }}
-        </p>
       </div>
 
       <!-- Quick Contact Buttons -->
@@ -61,10 +74,10 @@ defineEmits(['update:modelValue'])
           variant="flat"
           rounded="lg"
           size="default"
-          class="text-ikamm-dark font-weight-bold text-none flex-grow-1"
+          prepend-icon="mdi-phone"
+          class="text-on-primary font-weight-bold text-none flex-grow-1"
           href="tel:+66990869712"
         >
-          <v-icon icon="mdi-phone" class="mr-1.5"></v-icon>
           +66 99 086 9712
         </v-btn>
 
@@ -76,7 +89,9 @@ defineEmits(['update:modelValue'])
           class="text-white font-weight-bold text-none ikamm-border flex-grow-1"
           href="mailto:Service@ikammhomedecor.com"
         >
-          <v-icon icon="mdi-email-outline" color="primary" class="mr-1.5"></v-icon>
+          <template #prepend>
+            <v-icon icon="mdi-email-outline" color="primary"></v-icon>
+          </template>
           Service@ikammhomedecor.com
         </v-btn>
 
@@ -89,7 +104,9 @@ defineEmits(['update:modelValue'])
           href="https://www.ikammhomedecor.com"
           target="_blank"
         >
-          <v-icon icon="mdi-web" color="primary" class="mr-1.5"></v-icon>
+          <template #prepend>
+            <v-icon icon="mdi-web" color="primary"></v-icon>
+          </template>
           www.ikammhomedecor.com
         </v-btn>
       </div>
@@ -106,7 +123,7 @@ defineEmits(['update:modelValue'])
             <v-icon icon="mdi-office-building-marker" size="small"></v-icon>
             {{ t.bkkOfficeTitle }}
           </div>
-          <p class="text-caption text-slate-200 mb-3" style="line-height: 1.6;">
+          <p class="text-caption text-on-surface mb-3" style="line-height: 1.6;">
             {{ t.bkkAddress }}
           </p>
           <div class="d-flex flex-column ga-1 text-caption text-muted">
@@ -135,7 +152,7 @@ defineEmits(['update:modelValue'])
             <v-icon icon="mdi-earth" size="small"></v-icon>
             {{ t.phOfficeTitle }}
           </div>
-          <p class="text-caption text-slate-200 mb-3" style="line-height: 1.6;">
+          <p class="text-caption text-on-surface mb-3" style="line-height: 1.6;">
             {{ t.phAddress }}
           </p>
           <div class="d-flex flex-column ga-1 text-caption text-muted">

@@ -4,56 +4,100 @@ defineProps({
     type: String,
     default: ''
   },
+  totalProjects: {
+    type: Number,
+    default: 36
+  },
   t: {
     type: Object,
     required: true
   }
 })
 
-defineEmits(['update:searchQuery', 'clear-search'])
+defineEmits(['update:searchQuery', 'clear-search', 'quick-search'])
+
+const quickTags = [
+  { label: 'Walk-in Closet', icon: 'mdi-wardrobe-outline' },
+  { label: 'Marble', icon: 'mdi-texture-box' },
+  { label: 'Warm Glow', icon: 'mdi-lightbulb-on-outline' },
+  { label: 'Brass', icon: 'mdi-shimmer' }
+]
 </script>
 
 <template>
-  <div class="hero-gradient py-10 py-md-16">
-    <v-container class="text-center" style="max-width: 900px;">
-      <!-- Sub-badge -->
-      <v-chip
-        variant="outlined"
-        color="primary"
-        class="mb-4 text-uppercase font-weight-bold tracking-wider px-4"
-        size="small"
-        style="letter-spacing: 0.15em; background-color: rgba(197, 160, 89, 0.08);"
-      >
-        {{ t.heroTag }}
-      </v-chip>
+  <div class="hero-gradient py-8 py-md-12">
+    <v-container style="max-width: 1100px;">
+      <div class="text-center mx-auto" style="max-width: 820px;">
+        <!-- Sub-badge -->
+        <v-chip
+          variant="outlined"
+          color="primary"
+          prepend-icon="mdi-star-four-points"
+          class="mb-4 text-uppercase font-weight-bold px-4"
+          size="small"
+          style="letter-spacing: 0.14em; background-color: rgba(197, 160, 89, 0.1);"
+        >
+          {{ t.heroTag }}
+        </v-chip>
 
-      <!-- Main Headline -->
-      <h1 class="font-serif text-h4 text-sm-h3 text-md-h2 font-weight-bold text-white mb-3" style="line-height: 1.25;">
-        {{ t.heroTitlePrefix }} <br class="d-none d-sm-inline"/>
-        <span class="gold-text-gradient">{{ t.heroTitleGold }}</span>
-      </h1>
+        <!-- Main Headline -->
+        <h1 class="font-serif text-h4 text-sm-h3 font-weight-bold text-white mb-3" style="line-height: 1.25;">
+          {{ t.heroTitlePrefix }}
+          <span class="gold-text-gradient d-block mt-1">{{ t.heroTitleGold }}</span>
+        </h1>
 
-      <!-- Description -->
-      <p class="text-muted text-body-2 text-sm-body-1 mb-8 mx-auto font-weight-light" style="max-width: 680px; line-height: 1.7;">
-        {{ t.heroDesc }}
-      </p>
+        <!-- Description -->
+        <p class="text-muted text-body-2 text-sm-body-1 mb-6 mx-auto font-weight-regular" style="max-width: 660px; line-height: 1.7;">
+          {{ t.heroDesc }}
+        </p>
 
-      <!-- Search Bar -->
-      <div class="mx-auto" style="max-width: 580px;">
-        <v-text-field
-          :model-value="searchQuery"
-          @update:model-value="$emit('update:searchQuery', $event)"
-          :placeholder="t.searchPlaceholder"
-          prepend-inner-icon="mdi-magnify"
-          clearable
-          variant="solo-filled"
-          bg-color="surface"
-          rounded="xl"
-          density="comfortable"
-          hide-details
-          class="ikamm-border text-white elevation-4"
-          @click:clear="$emit('clear-search')"
-        ></v-text-field>
+        <!-- Search Bar -->
+        <div class="mx-auto mb-4" style="max-width: 640px;">
+          <v-text-field
+            :model-value="searchQuery"
+            @update:model-value="$emit('update:searchQuery', $event)"
+            :placeholder="t.searchPlaceholder"
+            prepend-inner-icon="mdi-magnify"
+            clearable
+            variant="solo-filled"
+            bg-color="surface"
+            color="primary"
+            rounded="pill"
+            density="comfortable"
+            hide-details
+            class="ikamm-border-accent elevation-8"
+            @click:clear="$emit('clear-search')"
+          >
+            <template #append-inner>
+              <v-chip
+                v-if="!searchQuery"
+                size="x-small"
+                color="primary"
+                variant="tonal"
+                class="font-weight-bold d-none d-sm-inline-flex"
+              >
+                {{ totalProjects }} {{ t.conceptsUnit }}
+              </v-chip>
+            </template>
+          </v-text-field>
+        </div>
+
+        <!-- Quick Search Suggestions -->
+        <div class="d-flex flex-wrap align-center justify-center ga-2">
+          <span class="text-caption text-muted mr-1 d-none d-sm-inline">Popular:</span>
+          <v-chip
+            v-for="tag in quickTags"
+            :key="tag.label"
+            size="small"
+            :variant="searchQuery.toLowerCase() === tag.label.toLowerCase() ? 'flat' : 'tonal'"
+            :color="searchQuery.toLowerCase() === tag.label.toLowerCase() ? 'primary' : 'muted'"
+            :prepend-icon="tag.icon"
+            class="cursor-pointer font-weight-medium text-caption"
+            @click="$emit('update:searchQuery', searchQuery === tag.label ? '' : tag.label)"
+          >
+            {{ tag.label }}
+          </v-chip>
+        </div>
       </div>
     </v-container>
   </div>

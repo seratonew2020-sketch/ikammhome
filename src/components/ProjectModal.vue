@@ -8,6 +8,14 @@ defineProps({
     type: Boolean,
     default: false
   },
+  hasPrev: {
+    type: Boolean,
+    default: false
+  },
+  hasNext: {
+    type: Boolean,
+    default: false
+  },
   currentLang: {
     type: String,
     default: 'th'
@@ -18,14 +26,14 @@ defineProps({
   }
 })
 
-defineEmits(['close', 'toggle-favorite', 'request-quote'])
+defineEmits(['close', 'toggle-favorite', 'request-quote', 'prev-project', 'next-project'])
 </script>
 
 <template>
   <v-dialog
     :model-value="!!project"
     @update:model-value="!$event && $emit('close')"
-    max-width="1000px"
+    max-width="1060px"
     scrollable
     transition="dialog-transition"
   >
@@ -33,51 +41,80 @@ defineEmits(['close', 'toggle-favorite', 'request-quote'])
       v-if="project"
       color="surface"
       rounded="xl"
-      class="ikamm-border overflow-hidden position-relative"
+      class="ikamm-border-accent overflow-hidden position-relative"
       elevation="24"
     >
-      <!-- Close Button -->
-      <v-btn
-        icon="mdi-close"
-        size="small"
-        variant="flat"
-        color="surface-variant"
-        class="position-absolute ikamm-border"
-        style="top: 16px; right: 16px; z-index: 10;"
-        @click="$emit('close')"
-      ></v-btn>
+      <!-- Top Right Controls (Prev / Next / Close) -->
+      <div class="position-absolute d-flex align-center ga-1.5" style="top: 14px; right: 14px; z-index: 10;">
+        <v-btn
+          icon="mdi-chevron-left"
+          size="small"
+          variant="flat"
+          color="surface-variant"
+          class="ikamm-border"
+          :disabled="!hasPrev"
+          title="Previous Concept"
+          @click="$emit('prev-project')"
+        ></v-btn>
+        <v-btn
+          icon="mdi-chevron-right"
+          size="small"
+          variant="flat"
+          color="surface-variant"
+          class="ikamm-border"
+          :disabled="!hasNext"
+          title="Next Concept"
+          @click="$emit('next-project')"
+        ></v-btn>
+        <v-btn
+          icon="mdi-close"
+          size="small"
+          variant="flat"
+          color="primary"
+          class="text-on-primary ml-1"
+          @click="$emit('close')"
+        ></v-btn>
+      </div>
 
       <v-row no-gutters>
         <!-- Left Image View -->
-        <v-col cols="12" md="7" class="position-relative bg-black d-flex align-center justify-center">
+        <v-col cols="12" md="7" class="position-relative bg-background d-flex align-center justify-center">
           <v-img
             :src="project.imageUrl"
             :alt="project.titles[currentLang]"
             cover
-            max-height="600"
+            min-height="360"
+            max-height="640"
             class="w-100 h-100"
-          ></v-img>
+          >
+            <template #placeholder>
+              <div class="d-flex align-center justify-center fill-height bg-surface">
+                <v-progress-circular indeterminate color="primary" size="36"></v-progress-circular>
+              </div>
+            </template>
+          </v-img>
 
           <!-- Floating Image Bar -->
           <div 
-            class="position-absolute pa-3 rounded-lg d-flex align-center justify-space-between ikamm-border"
-            style="bottom: 16px; left: 16px; right: 16px; background-color: rgba(11, 19, 14, 0.9); backdrop-filter: blur(8px);"
+            class="position-absolute pa-3 rounded-xl d-flex align-center justify-space-between glass-bar ikamm-border"
+            style="bottom: 16px; left: 16px; right: 16px;"
           >
-            <span class="text-caption text-primary d-flex align-center ga-1 font-weight-medium">
-              <v-icon icon="mdi-shield-check-outline" size="small"></v-icon>
+            <span class="text-caption text-primary d-flex align-center ga-1.5 font-weight-bold">
+              <v-icon icon="mdi-shield-check" size="18"></v-icon>
               {{ t.modalBadge }}
             </span>
             <v-btn
-              variant="text"
+              :variant="isSaved ? 'flat' : 'tonal'"
               color="primary"
-              density="compact"
               size="small"
+              rounded="pill"
               class="text-caption font-weight-bold text-none"
               @click="$emit('toggle-favorite', project.id)"
             >
               <v-icon 
                 :icon="isSaved ? 'mdi-bookmark' : 'mdi-bookmark-outline'" 
                 class="mr-1"
+                size="16"
               ></v-icon>
               {{ isSaved ? t.savedBtn : t.saveBtn }}
             </v-btn>
@@ -85,19 +122,19 @@ defineEmits(['close', 'toggle-favorite', 'request-quote'])
         </v-col>
 
         <!-- Right Content & Specifications -->
-        <v-col cols="12" md="5" class="pa-6 pa-sm-8 d-flex flex-column justify-space-between border-s-md" style="border-color: rgba(30, 58, 43, 0.4) !important;">
+        <v-col cols="12" md="5" class="pa-6 pa-sm-8 d-flex flex-column justify-space-between border-s-md" style="border-color: rgba(255, 255, 255, 0.08) !important;">
           <div>
             <!-- Header Tag & ID -->
-            <div class="d-flex align-center justify-space-between mb-3">
+            <div class="d-flex align-center justify-space-between mb-3 pr-16">
               <v-chip
                 size="small"
                 color="primary"
-                variant="outlined"
+                variant="tonal"
                 class="font-weight-bold text-caption text-uppercase"
               >
                 {{ project.categoryNames[currentLang] }}
               </v-chip>
-              <span class="text-caption text-muted">ID: #IK-{{ project.id }}</span>
+              <span class="text-caption text-muted font-weight-medium">#{{ project.id.toUpperCase() }}</span>
             </div>
 
             <!-- Title -->
@@ -106,41 +143,65 @@ defineEmits(['close', 'toggle-favorite', 'request-quote'])
             </h2>
 
             <!-- Description -->
-            <p class="text-caption text-muted font-weight-light mb-6" style="line-height: 1.7;">
+            <p class="text-body-2 text-muted font-weight-regular mb-5" style="line-height: 1.7;">
               {{ project.descriptions[currentLang] }}
             </p>
 
-            <!-- Specifications Card -->
-            <v-sheet
-              color="surface-variant"
-              rounded="lg"
-              class="pa-4 mb-6 ikamm-border"
-            >
-              <div class="d-flex align-center ga-1 text-caption text-primary font-weight-bold text-uppercase mb-3" style="letter-spacing: 0.1em;">
-                <v-icon icon="mdi-format-list-checks" size="small"></v-icon>
-                {{ t.specsTitle }}
-              </div>
+            <!-- Specifications Grid Cards -->
+            <div class="text-caption text-primary font-weight-bold text-uppercase mb-2.5 d-flex align-center ga-1.5" style="letter-spacing: 0.08em;">
+              <v-icon icon="mdi-format-list-checks" size="16"></v-icon>
+              {{ t.specsTitle }}
+            </div>
 
-              <!-- Spec Items -->
-              <div class="d-flex flex-column ga-2 text-caption">
-                <div class="d-flex justify-space-between pb-1 border-b" style="border-color: rgba(30, 58, 43, 0.4) !important;">
-                  <span class="text-muted">{{ t.coreFeature }}</span>
-                  <span class="text-white font-weight-bold text-right" style="max-width: 60%;">{{ project.specs.highlights[currentLang] }}</span>
-                </div>
-                <div class="d-flex justify-space-between pb-1 border-b" style="border-color: rgba(30, 58, 43, 0.4) !important;">
-                  <span class="text-muted">{{ t.materials }}</span>
-                  <span class="text-white font-weight-bold text-right" style="max-width: 60%;">{{ project.specs.materials[currentLang] }}</span>
-                </div>
-                <div class="d-flex justify-space-between pb-1 border-b" style="border-color: rgba(30, 58, 43, 0.4) !important;">
-                  <span class="text-muted">{{ t.lighting }}</span>
-                  <span class="text-white font-weight-bold text-right" style="max-width: 60%;">{{ project.specs.lighting[currentLang] }}</span>
-                </div>
-                <div class="d-flex justify-space-between pt-1">
-                  <span class="text-muted">{{ t.estSpace }}</span>
-                  <span class="text-white font-weight-bold">{{ project.specs.areas[currentLang] }}</span>
-                </div>
-              </div>
-            </v-sheet>
+            <v-row dense class="mb-5">
+              <v-col cols="12">
+                <v-sheet color="surface-variant" rounded="lg" class="pa-3 ikamm-border d-flex align-start ga-3">
+                  <v-avatar color="primary" variant="tonal" size="32" rounded="lg">
+                    <v-icon icon="mdi-sparkles" size="18"></v-icon>
+                  </v-avatar>
+                  <div>
+                    <div class="text-caption text-muted">{{ t.coreFeature }}</div>
+                    <div class="text-caption text-white font-weight-bold">{{ project.specs.highlights[currentLang] }}</div>
+                  </div>
+                </v-sheet>
+              </v-col>
+
+              <v-col cols="12">
+                <v-sheet color="surface-variant" rounded="lg" class="pa-3 ikamm-border d-flex align-start ga-3">
+                  <v-avatar color="primary" variant="tonal" size="32" rounded="lg">
+                    <v-icon icon="mdi-layers-triple-outline" size="18"></v-icon>
+                  </v-avatar>
+                  <div>
+                    <div class="text-caption text-muted">{{ t.materials }}</div>
+                    <div class="text-caption text-white font-weight-bold">{{ project.specs.materials[currentLang] }}</div>
+                  </div>
+                </v-sheet>
+              </v-col>
+
+              <v-col cols="7">
+                <v-sheet color="surface-variant" rounded="lg" class="pa-3 ikamm-border h-100 d-flex align-start ga-2.5">
+                  <v-avatar color="primary" variant="tonal" size="30" rounded="lg">
+                    <v-icon icon="mdi-lightbulb-on-outline" size="16"></v-icon>
+                  </v-avatar>
+                  <div>
+                    <div class="text-caption text-muted">{{ t.lighting }}</div>
+                    <div class="text-caption text-white font-weight-bold">{{ project.specs.lighting[currentLang] }}</div>
+                  </div>
+                </v-sheet>
+              </v-col>
+
+              <v-col cols="5">
+                <v-sheet color="surface-variant" rounded="lg" class="pa-3 ikamm-border h-100 d-flex align-start ga-2.5">
+                  <v-avatar color="primary" variant="tonal" size="30" rounded="lg">
+                    <v-icon icon="mdi-ruler-square" size="16"></v-icon>
+                  </v-avatar>
+                  <div>
+                    <div class="text-caption text-muted">{{ t.estSpace }}</div>
+                    <div class="text-caption text-primary font-weight-black">{{ project.specs.areas[currentLang] }}</div>
+                  </div>
+                </v-sheet>
+              </v-col>
+            </v-row>
 
             <!-- Color Palette -->
             <div class="mb-6">
@@ -156,22 +217,21 @@ defineEmits(['close', 'toggle-favorite', 'request-quote'])
                   variant="flat"
                   class="ikamm-border text-caption"
                 >
-                  <span class="color-dot mr-1.5" :style="{ backgroundColor: color.hex }"></span>
-                  <span class="text-slate-300">{{ color.name }}</span>
+                  <span class="color-dot mr-2" :style="{ backgroundColor: color.hex }"></span>
+                  <span class="text-on-surface font-weight-medium">{{ color.name }}</span>
                 </v-chip>
               </div>
             </div>
           </div>
 
           <!-- Action CTA -->
-          <div class="pt-4 border-t" style="border-color: rgba(30, 58, 43, 0.4) !important;">
+          <div class="pt-4 border-t d-flex ga-2" style="border-color: rgba(255, 255, 255, 0.08) !important;">
             <v-btn
-              block
               color="primary"
               size="large"
               rounded="xl"
-              prepend-icon="mdi-send-outline"
-              class="text-ikamm-dark font-weight-bold text-none shadow-lg text-body-2"
+              prepend-icon="mdi-chat-processing-outline"
+              class="text-on-primary font-weight-bold text-none elevation-4 text-body-2 flex-grow-1"
               @click="$emit('request-quote', project)"
             >
               {{ t.contactButton }}
