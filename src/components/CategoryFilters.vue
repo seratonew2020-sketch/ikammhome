@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useDisplay } from 'vuetify'
 
 const props = defineProps({
   categories: {
@@ -13,10 +14,6 @@ const props = defineProps({
   filteredCount: {
     type: Number,
     required: true
-  },
-  showOnlyFavorites: {
-    type: Boolean,
-    default: false
   },
   gridCols: {
     type: Number,
@@ -36,7 +33,9 @@ const props = defineProps({
   }
 })
 
-defineEmits(['select-category', 'clear-favorites-filter', 'update:gridCols'])
+defineEmits(['select-category', 'update:gridCols'])
+
+const { xs } = useDisplay()
 
 const currentCategoryObj = computed(() => {
   return props.categories.find(c => c.id === props.activeCategory) || props.categories[0]
@@ -66,13 +65,14 @@ const getCategoryMdiIcon = (cat) => {
 <template>
   <div>
     <!-- Sticky Filter Bar -->
-    <div class="sticky-filter-bar py-3">
-      <v-container class="py-0" style="max-width: 1440px;">
-        <div class="d-flex flex-column flex-md-row align-center justify-space-between ga-3">
+    <div class="sticky-filter-bar py-2 py-sm-3">
+      <v-container class="py-0 px-3 px-sm-4" style="max-width: 1440px;">
+        <div class="d-flex flex-column flex-md-row align-center justify-space-between ga-2 ga-md-3">
           <!-- Main Category Slide Group / Buttons -->
           <v-slide-group
             :model-value="activeCategory"
-            show-arrows
+            show-arrows="desktop"
+            center-active
             class="w-100 flex-grow-1 overflow-hidden"
           >
             <v-slide-group-item
@@ -84,21 +84,21 @@ const getCategoryMdiIcon = (cat) => {
                 @click="$emit('select-category', cat.id)"
                 rounded="pill"
                 :variant="activeCategory === cat.id ? 'flat' : 'tonal'"
-                size="default"
+                :size="xs ? 'small' : 'default'"
                 :color="activeCategory === cat.id ? 'primary' : 'surface-variant'"
                 :class="[
-                  'text-none font-weight-bold text-caption text-sm-body-2 mr-2',
+                  'text-none font-weight-bold text-caption text-sm-body-2 mr-1.5 mr-sm-2 px-3 px-sm-4',
                   activeCategory === cat.id ? 'text-on-primary' : 'text-on-surface ikamm-border'
                 ]"
                 :elevation="activeCategory === cat.id ? 4 : 0"
               >
                 <template #prepend>
-                  <v-icon :icon="getCategoryMdiIcon(cat)" size="18"></v-icon>
+                  <v-icon :icon="getCategoryMdiIcon(cat)" :size="xs ? 16 : 18"></v-icon>
                 </template>
                 <span>{{ cat.names[currentLang] || cat.names['th'] }}</span>
                 <v-chip
                   size="x-small"
-                  class="ml-2 font-weight-black"
+                  class="ml-1.5 ml-sm-2 font-weight-black"
                   :color="activeCategory === cat.id ? 'secondary' : 'background'"
                   :text-color="activeCategory === cat.id ? 'accent' : 'muted'"
                   variant="flat"
@@ -110,19 +110,8 @@ const getCategoryMdiIcon = (cat) => {
           </v-slide-group>
 
           <!-- Status Filter Info & Grid View Switcher -->
-          <div class="d-flex align-center justify-space-between justify-md-end w-100 w-md-auto ga-3 flex-shrink-0">
+          <div class="d-flex align-center justify-space-between justify-md-end w-100 w-md-auto ga-3 flex-shrink-0 px-1 px-md-0">
             <div class="text-caption text-muted d-flex align-center ga-2 text-no-wrap">
-              <v-chip
-                v-if="showOnlyFavorites"
-                color="primary"
-                variant="tonal"
-                size="small"
-                closable
-                prepend-icon="mdi-bookmark"
-                @click:close="$emit('clear-favorites-filter')"
-              >
-                {{ t.savedTooltip }}
-              </v-chip>
               <span>
                 {{ t.showingCount }} <strong class="text-primary text-body-2 font-weight-black">{{ filteredCount }}</strong> {{ t.conceptsUnit }}
               </span>
@@ -149,26 +138,26 @@ const getCategoryMdiIcon = (cat) => {
     </div>
 
     <!-- Category Highlight Banner (Shows the detailed scope of the selected built-in category) -->
-    <v-container class="pt-4 pb-2" style="max-width: 1440px;">
+    <v-container class="pt-3 pt-sm-4 pb-2 px-3 px-sm-4" style="max-width: 1440px;">
       <v-sheet
         v-if="currentCategoryObj && currentCategoryObj.descriptions"
         color="surface"
         rounded="xl"
-        class="pa-4 pa-sm-5 ikamm-border-accent d-flex flex-column flex-sm-row align-start align-sm-center justify-space-between ga-4"
+        class="pa-3.5 pa-sm-5 ikamm-border-accent d-flex flex-column flex-sm-row align-start align-sm-center justify-space-between ga-3 ga-sm-4"
       >
-        <div class="d-flex align-start align-sm-center ga-3.5">
+        <div class="d-flex align-start align-sm-center ga-3">
           <v-avatar
             color="primary"
             variant="tonal"
-            size="48"
+            :size="xs ? 40 : 48"
             rounded="lg"
             class="flex-shrink-0 ikamm-border-accent"
           >
-            <v-icon :icon="getCategoryMdiIcon(currentCategoryObj)" size="24" color="primary"></v-icon>
+            <v-icon :icon="getCategoryMdiIcon(currentCategoryObj)" :size="xs ? 20 : 24" color="primary"></v-icon>
           </v-avatar>
-          <div>
+          <div style="min-width: 0;">
             <div class="d-flex align-center ga-2 flex-wrap mb-1">
-              <h2 class="font-serif text-subtitle-1 text-sm-h6 font-weight-bold text-white">
+              <h2 class="font-serif text-body-1 text-sm-h6 font-weight-bold text-white" style="line-height: 1.3;">
                 {{ currentCategoryObj.names[currentLang] || currentCategoryObj.names['th'] }}
               </h2>
               <v-chip size="x-small" color="primary" variant="flat" class="text-on-primary font-weight-bold">
@@ -188,7 +177,7 @@ const getCategoryMdiIcon = (cat) => {
           size="small"
           rounded="pill"
           prepend-icon="mdi-apps"
-          class="text-none font-weight-bold flex-shrink-0"
+          class="text-none font-weight-bold flex-shrink-0 align-self-end align-self-sm-center"
           @click="$emit('select-category', 'all')"
         >
           {{ t.viewAll }}

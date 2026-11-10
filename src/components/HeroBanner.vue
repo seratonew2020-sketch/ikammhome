@@ -1,4 +1,6 @@
 <script setup>
+import { useDisplay } from 'vuetify'
+
 defineProps({
   searchQuery: {
     type: String,
@@ -16,6 +18,8 @@ defineProps({
 
 defineEmits(['update:searchQuery', 'clear-search', 'quick-search'])
 
+const { xs } = useDisplay()
+
 const quickTags = [
   { label: 'Walk-in Closet', icon: 'mdi-wardrobe-outline' },
   { label: 'Marble', icon: 'mdi-texture-box' },
@@ -25,34 +29,34 @@ const quickTags = [
 </script>
 
 <template>
-  <div class="hero-gradient py-8 py-md-12">
-    <v-container style="max-width: 1100px;">
+  <div class="hero-gradient py-6 py-sm-9 py-md-12">
+    <v-container class="px-3 px-sm-4" style="max-width: 1100px;">
       <div class="text-center mx-auto" style="max-width: 820px;">
         <!-- Sub-badge -->
         <v-chip
           variant="outlined"
           color="primary"
           prepend-icon="mdi-star-four-points"
-          class="mb-4 text-uppercase font-weight-bold px-4"
-          size="small"
-          style="letter-spacing: 0.14em; background-color: rgba(197, 160, 89, 0.1);"
+          class="mb-3 mb-sm-4 text-uppercase font-weight-bold px-3 px-sm-4"
+          :size="xs ? 'x-small' : 'small'"
+          style="letter-spacing: 0.12em; background-color: rgba(197, 160, 89, 0.1);"
         >
           {{ t.heroTag }}
         </v-chip>
 
         <!-- Main Headline -->
-        <h1 class="font-serif text-h4 text-sm-h3 font-weight-bold text-white mb-3" style="line-height: 1.25;">
+        <h1 class="font-serif text-h5 text-sm-h3 font-weight-bold text-white mb-2.5 mb-sm-3 px-1" style="line-height: 1.25;">
           {{ t.heroTitlePrefix }}
           <span class="gold-text-gradient d-block mt-1">{{ t.heroTitleGold }}</span>
         </h1>
 
         <!-- Description -->
-        <p class="text-muted text-body-2 text-sm-body-1 mb-6 mx-auto font-weight-regular" style="max-width: 660px; line-height: 1.7;">
+        <p class="text-muted text-caption text-sm-body-1 mb-5 mb-sm-6 mx-auto font-weight-regular px-2" style="max-width: 660px; line-height: 1.7;">
           {{ t.heroDesc }}
         </p>
 
         <!-- Search Bar -->
-        <div class="mx-auto mb-4" style="max-width: 640px;">
+        <div class="mx-auto mb-3.5 mb-sm-4" style="max-width: 640px;">
           <v-text-field
             :model-value="searchQuery"
             @update:model-value="$emit('update:searchQuery', $event)"
@@ -63,7 +67,7 @@ const quickTags = [
             bg-color="surface"
             color="primary"
             rounded="pill"
-            density="comfortable"
+            :density="xs ? 'compact' : 'comfortable'"
             hide-details
             class="ikamm-border-accent elevation-8"
             @click:clear="$emit('clear-search')"
@@ -83,16 +87,16 @@ const quickTags = [
         </div>
 
         <!-- Quick Search Suggestions -->
-        <div class="d-flex flex-wrap align-center justify-center ga-2">
+        <div class="d-flex flex-wrap align-center justify-center ga-1.5 ga-sm-2">
           <span class="text-caption text-muted mr-1 d-none d-sm-inline">Popular:</span>
           <v-chip
             v-for="tag in quickTags"
             :key="tag.label"
-            size="small"
+            :size="xs ? 'x-small' : 'small'"
             :variant="searchQuery.toLowerCase() === tag.label.toLowerCase() ? 'flat' : 'tonal'"
             :color="searchQuery.toLowerCase() === tag.label.toLowerCase() ? 'primary' : 'muted'"
             :prepend-icon="tag.icon"
-            class="cursor-pointer font-weight-medium text-caption"
+            class="cursor-pointer font-weight-medium text-caption px-2.5"
             @click="$emit('update:searchQuery', searchQuery === tag.label ? '' : tag.label)"
           >
             {{ tag.label }}

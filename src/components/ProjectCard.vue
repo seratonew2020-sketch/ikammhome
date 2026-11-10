@@ -4,10 +4,6 @@ defineProps({
     type: Object,
     required: true
   },
-  isSaved: {
-    type: Boolean,
-    default: false
-  },
   currentLang: {
     type: String,
     default: 'th'
@@ -18,7 +14,7 @@ defineProps({
   }
 })
 
-defineEmits(['open', 'toggle-favorite'])
+defineEmits(['open'])
 
 const handleImageError = (event, projectTitle) => {
   event.target.src = `https://placehold.co/800x600/132219/c5a059?text=${encodeURIComponent(projectTitle)}`
@@ -51,35 +47,16 @@ const handleImageError = (event, projectTitle) => {
       <div class="position-absolute inset-0 w-100 h-100 card-image-overlay" style="top: 0; left: 0;"></div>
 
       <!-- Category Tag Badge -->
-      <div class="position-absolute" style="top: 12px; left: 12px; z-index: 2;">
+      <div class="position-absolute" style="top: 12px; left: 12px; right: 12px; z-index: 2;">
         <v-chip
           size="small"
           color="primary"
           variant="flat"
-          class="font-weight-bold text-caption text-on-primary elevation-3"
-          style="letter-spacing: 0.04em;"
+          class="font-weight-bold text-caption text-on-primary elevation-3 text-truncate"
+          style="letter-spacing: 0.03em; max-width: 100%;"
         >
-          {{ project.categoryNames[currentLang] }}
+          <span class="text-truncate">{{ project.categoryNames[currentLang] }}</span>
         </v-chip>
-      </div>
-
-      <!-- Bookmark Button -->
-      <div class="position-absolute" style="top: 10px; right: 10px; z-index: 2;">
-        <v-btn
-          icon
-          size="small"
-          variant="flat"
-          :color="isSaved ? 'primary' : 'surface'"
-          class="ikamm-border elevation-3"
-          @click.stop="$emit('toggle-favorite', project.id)"
-          :title="isSaved ? t.savedBtn : t.saveBtn"
-        >
-          <v-icon
-            :icon="isSaved ? 'mdi-bookmark' : 'mdi-bookmark-outline'"
-            :color="isSaved ? 'on-primary' : 'white'"
-            size="18"
-          ></v-icon>
-        </v-btn>
       </div>
 
       <!-- Bottom Image Info Bar: Area & Color Palette Dots -->
@@ -113,7 +90,7 @@ const handleImageError = (event, projectTitle) => {
     </div>
 
     <!-- Card Content -->
-    <v-card-text class="pa-5 d-flex flex-column flex-grow-1 justify-space-between">
+    <v-card-text class="pa-4 pa-sm-5 d-flex flex-column flex-grow-1 justify-space-between">
       <div>
         <!-- Highlight Specs -->
         <div class="d-flex align-center text-caption text-primary font-weight-bold mb-1.5">
@@ -133,9 +110,9 @@ const handleImageError = (event, projectTitle) => {
       </div>
 
       <!-- Card Footer -->
-      <div class="pt-3 border-t d-flex align-center justify-space-between" style="border-color: rgba(255, 255, 255, 0.07) !important;">
+      <div class="pt-3 border-t d-flex align-center justify-space-between ga-2" style="border-color: rgba(255, 255, 255, 0.07) !important;">
         <!-- Materials Preview -->
-        <span class="text-caption text-muted line-clamp-1 mr-2" style="max-width: 60%;">
+        <span class="text-caption text-muted line-clamp-1" style="min-width: 0; flex: 1;">
           <v-icon icon="mdi-layers-triple-outline" size="13" color="primary" class="mr-1"></v-icon>
           {{ project.specs.materials[currentLang] }}
         </span>
@@ -147,7 +124,7 @@ const handleImageError = (event, projectTitle) => {
           size="small"
           rounded="pill"
           append-icon="mdi-arrow-right"
-          class="text-none font-weight-bold text-caption px-3"
+          class="text-none font-weight-bold text-caption px-3 flex-shrink-0"
         >
           {{ t.exploreConcept }}
         </v-btn>

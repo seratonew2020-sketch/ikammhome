@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useDisplay } from 'vuetify'
 import { categories, initialProjects } from './data/projects.js'
 import { translations } from './i18n/translations.js'
 
@@ -11,6 +12,8 @@ import ProjectModal from './components/ProjectModal.vue'
 import ContactDialog from './components/ContactDialog.vue'
 import ToastNotification from './components/ToastNotification.vue'
 import AppFooter from './components/AppFooter.vue'
+
+const { xs } = useDisplay()
 
 // Language State (Default: Thai 'th')
 const currentLang = ref('th')
@@ -31,8 +34,6 @@ const changeLanguage = (langCode) => {
 const activeCategory = ref('all')
 const searchQuery = ref('')
 const selectedProject = ref(null)
-const favorites = ref([])
-const showOnlyFavorites = ref(false)
 const toastMessage = ref('')
 const isContactOpen = ref(false)
 const projects = ref(initialProjects)
@@ -51,16 +52,6 @@ onMounted(() => {
     }
   } catch (e) {
     console.error(e)
-  }
-
-  // Load saved favorites
-  try {
-    const savedFavs = localStorage.getItem('ikamm_favorites')
-    if (savedFavs) {
-      favorites.value = JSON.parse(savedFavs)
-    }
-  } catch (e) {
-    console.error('Failed to parse favorites from storage', e)
   }
 
   // Escape & Arrow navigation shortcut
@@ -97,15 +88,6 @@ const handleKeydown = (e) => {
   }
 }
 
-// Save favorites
-const saveFavoritesToStorage = () => {
-  try {
-    localStorage.setItem('ikamm_favorites', JSON.stringify(favorites.value))
-  } catch (e) {
-    console.error(e)
-  }
-}
-
 // Computed Filtered Projects
 const filteredProjects = computed(() => {
   const lang = currentLang.value
@@ -129,10 +111,7 @@ const filteredProjects = computed(() => {
       currentMat.includes(q) ||
       currentHigh.includes(q)
 
-    // Favorites match
-    const matchesFavorite = !showOnlyFavorites.value || favorites.value.includes(project.id)
-
-    return matchesCategory && matchesSearch && matchesFavorite
+    return matchesCategory && matchesSearch
   })
 })
 
@@ -170,32 +149,9 @@ const nextProject = () => {
   }
 }
 
-// Favorites Handlers
-const toggleFavorite = (id) => {
-  const index = favorites.value.indexOf(id)
-  if (index > -1) {
-    favorites.value.splice(index, 1)
-    showToast(t.value.toastRemoved)
-  } else {
-    favorites.value.push(id)
-    showToast(t.value.toastSaved)
-  }
-  saveFavoritesToStorage()
-}
-
-const isFavorite = (id) => favorites.value.includes(id)
-
-const toggleFavoriteView = () => {
-  showOnlyFavorites.value = !showOnlyFavorites.value
-  if (showOnlyFavorites.value) {
-    activeCategory.value = 'all'
-  }
-}
-
 const resetFilters = () => {
   activeCategory.value = 'all'
   searchQuery.value = ''
-  showOnlyFavorites.value = false
 }
 
 // Toast
@@ -207,7 +163,7 @@ const showToast = (msg) => {
   }, 3200)
 }
 
-const requestConsultation = (project) => {
+const requestConsultation = () => {
   // Open contact dialog directly for convenient contact
   isContactOpen.value = true
 }
@@ -217,12 +173,9 @@ const requestConsultation = (project) => {
   <v-app class="bg-background">
     <!-- Header with IKAMM Brand & Contact Button -->
     <HeaderNavbar 
-      :favorites-count="favorites.length"
-      :show-only-favorites="showOnlyFavorites"
       :current-lang="currentLang"
       :t="t"
       @reset-filters="resetFilters"
-      @toggle-favorites="toggleFavoriteView"
       @change-language="changeLanguage"
       @open-contact="isContactOpen = true"
     />
@@ -242,23 +195,21 @@ const requestConsultation = (project) => {
         :categories="categories"
         :active-category="activeCategory"
         :filtered-count="filteredProjects.length"
-        :show-only-favorites="showOnlyFavorites"
         v-model:grid-cols="gridCols"
         :get-category-count="getCategoryCount"
         :current-lang="currentLang"
         :t="t"
         @select-category="activeCategory = $event"
-        @clear-favorites-filter="showOnlyFavorites = false"
       />
 
       <!-- Projects Gallery Grid -->
-      <v-container class="pb-16 pt-2" style="max-width: 1440px;">
+      <v-container class="pb-16 pt-2 px-3 px-sm-4" style="max-width: 1440px;">
         <!-- Empty State -->
         <v-sheet
           v-if="filteredProjects.length === 0"
           color="surface"
           rounded="xl"
-          class="text-center py-16 px-6 ikamm-border mx-auto my-6"
+          class="text-center py-12 py-sm-16 px-4 px-sm-6 ikamm-border mx-auto my-6"
           style="max-width: 640px;"
         >
           <v-avatar color="surface-variant" size="64" class="mb-4 ikamm-border">
@@ -282,21 +233,20 @@ const requestConsultation = (project) => {
         </v-sheet>
 
         <!-- Vuetify Grid -->
-        <v-row v-else>
+        <v-row v-else :dense="xs">
           <v-col
             v-for="project in filteredProjects"
             :key="project.id"
             cols="12"
             sm="6"
             :lg="gridCols"
+            class="mb-2 mb-sm-0"
           >
             <ProjectCard 
               :project="project"
-              :is-saved="isFavorite(project.id)"
               :current-lang="currentLang"
               :t="t"
               @open="openModal"
-              @toggle-favorite="toggleFavorite"
             />
           </v-col>
         </v-row>
@@ -304,16 +254,13 @@ const requestConsultation = (project) => {
     </v-main>
 
     <!-- Floating Quick Actions (Back to Top & Quick Contact) -->
-    <div 
-      class="position-fixed d-flex flex-column align-end ga-2.5"
-      style="bottom: 24px; right: 24px; z-index: 90;"
-    >
+    <div class="position-fixed d-flex flex-column align-end ga-2 floating-actions">
       <v-scale-transition>
         <v-btn
           v-if="showScrollTop"
           icon="mdi-arrow-up"
           color="surface-variant"
-          size="default"
+          :size="xs ? 'small' : 'default'"
           rounded="circle"
           elevation="8"
           class="ikamm-border text-white"
@@ -324,11 +271,11 @@ const requestConsultation = (project) => {
 
       <v-btn
         color="primary"
-        size="large"
+        :size="xs ? 'default' : 'large'"
         rounded="pill"
         elevation="12"
         prepend-icon="mdi-chat-processing"
-        class="text-on-primary font-weight-bold text-none px-5 gold-glow"
+        class="text-on-primary font-weight-bold text-none px-4 px-sm-5 gold-glow"
         @click="isContactOpen = true"
       >
         {{ t.navContact }}
@@ -338,13 +285,11 @@ const requestConsultation = (project) => {
     <!-- Detail Dialog Modal -->
     <ProjectModal 
       :project="selectedProject"
-      :is-saved="selectedProject ? isFavorite(selectedProject.id) : false"
       :has-prev="hasPrevProject"
       :has-next="hasNextProject"
       :current-lang="currentLang"
       :t="t"
       @close="closeModal"
-      @toggle-favorite="toggleFavorite"
       @request-quote="requestConsultation"
       @prev-project="prevProject"
       @next-project="nextProject"

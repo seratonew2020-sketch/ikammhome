@@ -7,10 +7,20 @@
   --ikamm-accent-light: #E6D2A8;
   --ikamm-accent-hover: #A8833F;
   --ikamm-muted: #94A89B;
+  --navbar-height: 80px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -19,7 +29,12 @@ body {
   color: #F1F5F9;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .font-serif {
@@ -42,6 +57,16 @@ body {
   background: #C5A059;
 }
 
+/* Hide horizontal scrollbar on touch category rows */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 .gold-glow {
   box-shadow: 0 0 30px -5px rgba(197, 160, 89, 0.35);
 }
@@ -61,13 +86,13 @@ body {
 }
 
 .glass-bar {
-  background: rgba(10, 17, 13, 0.85) !important;
+  background: rgba(10, 17, 13, 0.88) !important;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 }
 
 .glass-pill {
-  background: rgba(18, 32, 24, 0.82) !important;
+  background: rgba(18, 32, 24, 0.85) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -86,18 +111,20 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.07) !important;
 }
 
-.project-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(197, 160, 89, 0.55) !important;
-  box-shadow: 0 22px 40px -12px rgba(0, 0, 0, 0.75), 0 0 24px rgba(197, 160, 89, 0.14) !important;
+@media (hover: hover) {
+  .project-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(197, 160, 89, 0.55) !important;
+    box-shadow: 0 22px 40px -12px rgba(0, 0, 0, 0.75), 0 0 24px rgba(197, 160, 89, 0.14) !important;
+  }
+
+  .project-card:hover .image-hover-zoom {
+    transform: scale(1.06);
+  }
 }
 
 .image-hover-zoom {
   transition: transform 0.65s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-.project-card:hover .image-hover-zoom {
-  transform: scale(1.06);
 }
 
 .card-image-overlay {
@@ -130,11 +157,59 @@ body {
 
 .sticky-filter-bar {
   position: sticky;
-  top: 80px;
+  top: var(--navbar-height, 80px);
   z-index: 20;
-  background: rgba(10, 17, 13, 0.88);
+  background: rgba(10, 17, 13, 0.92);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
+/* Floating Actions with Safe Area Inset for iOS & Android Gesture Bar */
+.floating-actions {
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  z-index: 90;
+}
+
+@media (min-width: 600px) {
+  .floating-actions {
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    right: calc(24px + env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Mobile & Cross-Device Responsive Optimizations */
+@media (max-width: 599px) {
+  :root {
+    --navbar-height: 64px;
+  }
+
+  /* Prevent iOS Safari auto-zoom on input focus by keeping input >= 16px */
+  input,
+  textarea,
+  .v-field__input {
+    font-size: 16px !important;
+  }
+
+  .brand-title-mobile {
+    font-size: 0.92rem !important;
+    letter-spacing: 0.06em !important;
+  }
+
+  .brand-sub-mobile {
+    font-size: 8px !important;
+    letter-spacing: 0.12em !important;
+  }
+}
+
+@media (max-width: 374px) {
+  .brand-title-mobile {
+    font-size: 0.82rem !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .brand-sub-mobile {
+    display: none !important;
+  }
+}

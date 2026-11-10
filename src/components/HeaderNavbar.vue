@@ -1,15 +1,8 @@
 <script setup>
+import { useDisplay } from 'vuetify'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 
 defineProps({
-  favoritesCount: {
-    type: Number,
-    default: 0
-  },
-  showOnlyFavorites: {
-    type: Boolean,
-    default: false
-  },
   currentLang: {
     type: String,
     default: 'th'
@@ -20,25 +13,28 @@ defineProps({
   }
 })
 
-defineEmits(['reset-filters', 'toggle-favorites', 'change-language', 'open-contact'])
+defineEmits(['reset-filters', 'change-language', 'open-contact'])
+
+const { xs } = useDisplay()
 </script>
 
 <template>
   <v-app-bar
-    height="80"
+    :height="xs ? 64 : 80"
     class="glass-bar border-b ikamm-border"
     flat
   >
-    <v-container class="d-flex align-center justify-space-between py-0" style="max-width: 1440px;">
+    <v-container class="d-flex align-center justify-space-between py-0 px-3 px-sm-4" style="max-width: 1440px;">
       <!-- IKAMM Logo Brand Section -->
       <div 
-        class="d-flex align-center ga-3 cursor-pointer"
+        class="d-flex align-center ga-2 ga-sm-3 cursor-pointer flex-shrink-1 overflow-hidden"
+        style="min-width: 0;"
         @click="$emit('reset-filters')"
       >
         <v-avatar
-          size="50"
+          :size="xs ? 40 : 50"
           rounded="lg"
-          class="ikamm-border-accent elevation-4 overflow-hidden bg-surface"
+          class="ikamm-border-accent elevation-4 overflow-hidden bg-surface flex-shrink-0"
         >
           <v-img
             src="/logo.jpg"
@@ -46,16 +42,16 @@ defineEmits(['reset-filters', 'toggle-favorites', 'change-language', 'open-conta
             cover
           ></v-img>
         </v-avatar>
-        <div class="d-flex flex-column justify-center">
+        <div class="d-flex flex-column justify-center overflow-hidden" style="min-width: 0;">
           <span 
-            class="font-serif font-weight-black text-white text-subtitle-1 text-sm-h6 text-no-wrap"
-            style="letter-spacing: 0.12em !important; line-height: 1.15;"
+            class="font-serif font-weight-black text-white text-subtitle-1 text-sm-h6 text-truncate brand-title-mobile"
+            style="letter-spacing: 0.12em; line-height: 1.15;"
           >
             {{ t.brandName }}
           </span>
           <span 
-            class="text-uppercase font-weight-bold text-caption text-primary mt-0.5 text-no-wrap"
-            style="font-size: 9px !important; letter-spacing: 0.2em !important;"
+            class="text-uppercase font-weight-bold text-caption text-primary mt-0.5 text-truncate brand-sub-mobile"
+            style="font-size: 9px; letter-spacing: 0.2em;"
           >
             {{ t.brandSub }}
           </span>
@@ -63,7 +59,7 @@ defineEmits(['reset-filters', 'toggle-favorites', 'change-language', 'open-conta
       </div>
 
       <!-- Quick Info / Language / Actions -->
-      <div class="d-flex align-center ga-2 ga-sm-3">
+      <div class="d-flex align-center ga-1.5 ga-sm-3 flex-shrink-0">
         <!-- Highlights features for wide screen -->
         <div class="d-none d-lg-flex align-center ga-2 mr-2">
           <v-chip
@@ -125,30 +121,6 @@ defineEmits(['reset-filters', 'toggle-favorites', 'change-language', 'open-conta
           :current-lang="currentLang"
           @change-language="$emit('change-language', $event)"
         />
-
-        <!-- Favorite Button -->
-        <v-btn
-          :variant="showOnlyFavorites ? 'flat' : 'tonal'"
-          :color="showOnlyFavorites ? 'primary' : 'surface-variant'"
-          rounded="xl"
-          size="default"
-          class="ikamm-border text-none font-weight-bold px-3"
-          :title="t.savedTooltip"
-          @click="$emit('toggle-favorites')"
-        >
-          <v-icon 
-            :icon="favoritesCount > 0 ? 'mdi-bookmark' : 'mdi-bookmark-outline'" 
-            :color="showOnlyFavorites ? 'on-primary' : (favoritesCount > 0 ? 'primary' : 'muted')"
-            size="20"
-          ></v-icon>
-          <span 
-            v-if="favoritesCount > 0" 
-            class="ml-1.5 text-caption font-weight-black"
-            :class="showOnlyFavorites ? 'text-on-primary' : 'text-primary'"
-          >
-            {{ favoritesCount }}
-          </span>
-        </v-btn>
       </div>
     </v-container>
   </v-app-bar>
