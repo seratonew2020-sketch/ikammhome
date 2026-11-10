@@ -99,9 +99,9 @@ const { xs } = useDisplay()
               </template>
             </v-img>
 
-            <!-- Floating Image Bar -->
+            <!-- Floating Image Bar (Desktop/Tablet only) -->
             <div 
-              class="position-absolute px-3 py-2 rounded-xl d-flex align-center justify-space-between glass-bar ikamm-border"
+              class="position-absolute px-3 py-2 rounded-xl d-none d-sm-flex align-center justify-space-between glass-bar ikamm-border"
               style="bottom: 12px; left: 12px; right: 12px;"
             >
               <span class="text-caption text-primary d-flex align-center ga-1.5 font-weight-bold">
